@@ -1,21 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Image, StyleSheet, Platform, View, Text } from 'react-native';
-// import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { FlatList } from 'react-native';
-// import VPBankCard from '@/components/Card/VPBankCard';
 import ScaleUtils from '@/utils/ScaleUtils';
 import { useAppDispatch, useAppSelector } from '@/hooks/reduxHook';
 import { RootState } from '@/hooks/store';
 import TransactionItem from '@/components/Transactions/TransactionItem';
-import { formatDateUK, getFirstDayOfMonth, getLastDayOfMonth, getTimeFromStartOfYearToNow } from '@/utils/format';
+import { formatDateUK, getLastDayOfMonth, getTimeFromStartOfYearToNow } from '@/utils/format';
 import { getTransactionByCategorys, getTransactionsSummary } from '@/redux/transactions.slice';
 import SummaryItemDetails from '@/components/Transactions/SummaryItemDetails';
-// import CryptoPortfolio from '@/components/Crypto/CryptoPortfolio';
-import ButtonHome from '@/components/ButtonHome';
-import Summary from '@/components/Statisticcal/Summary';
 import { getSummaryReport } from '@/redux/reportSlice';
-import Loading from '@/components/Loading';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import FinancialMetrics from '@/components/Card/MetricCard';
+import VietnameseCalendar from '@/components/Calendars/CalendarMonthVN';
 
 
 
@@ -23,16 +18,11 @@ export default function HomeScreen() {
   const dispatch = useAppDispatch();
   const transactionSummaryState = useAppSelector((state: RootState) => state.transaction.transactionSummary);
   const transactionByCategoryState = useAppSelector((state: RootState) => state.transaction.transactionByCategory);
-  const summaryState = useAppSelector((state: RootState) => state.report.summaryReport);
 
   const [fromDate, setFromDate] = useState(getTimeFromStartOfYearToNow().startOfYear);
   const [toDate, setToDate] = useState(getLastDayOfMonth());
   const [visibleDetailSummary, setVisibleDetailSummary] = useState(false);
-  const [chartData, setChartData] = useState<{ series: number[]; categories: string[]; totalAmount: number }>({
-    series: [],
-    categories: [],
-    totalAmount: 0,
-  });
+  const [type, setType] = useState('salary');
   useEffect(() => {
     const data = {
       startDate: formatDateUK(fromDate),
@@ -72,57 +62,21 @@ export default function HomeScreen() {
     }
 
   }
-  useEffect(() => {
-    if (summaryState) {
-      const chartData = getChartData(summaryState);
-      setChartData(chartData);
-    }
-  }, [summaryState]);
-  const getChartData = (summaryState: any) => {
-    const { expenseByCategory } = summaryState;
-    if (Array.isArray(expenseByCategory)) {
-      console.error("Expected an object, but received an array:", expenseByCategory);
-      return { series: [], categories: [], totalAmount: 0 };
-    }
-    const series = [];
-    const categories = [];
-    let totalAmount = 0;
-    for (const key in expenseByCategory) {
-      if (expenseByCategory.hasOwnProperty(key)) {
-        const { totalAmount: amount, categoryName } = expenseByCategory[key];
-        series.push(amount);
-        categories.push(categoryName);
-        totalAmount += amount;
-      }
-    }
-    return { series, categories, totalAmount };
-  };
-  const categories: { id: number, name: string; icon: string }[] = [
-    { id: 1, name: 'Chi phí', icon: 'attach-money' },
-    { id: 2, name: 'Mục tiêu', icon: 'flag' },
-    { id: 3, name: 'Đầu tư', icon: 'trending-up' },
-    { id: 4, name: 'Khác', icon: 'more-horiz' }
+  const categories: { id: number, title: string; name: string; amount: string }[] = [
+    { id: 1, title: 'Lương', name: "salary", amount: '1.23' },
+    { id: 2, title: 'Chi phí', name: "expense", amount: '1.200' },
+    { id: 3, title: 'Tháng', name: "monthly", amount: '2.550' },
   ];
+  const hanldeSelectType = useCallback((name: string) => {
+    setType(name);
+  }, [type]);
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <MaterialIcons name="menu" size={30} color="#000" />
-        <MaterialIcons name="notifications" size={30} color="#000" />
+
+      <FinancialMetrics categories={categories} onSelect={hanldeSelectType} type={type} />
+      <View style={{ marginTop: ScaleUtils.floorVerticalScale(5) , marginBottom: ScaleUtils.floorVerticalScale(10)}}>
+        <VietnameseCalendar />
       </View>
-
-      <Text style={styles.sectionTitle}>Thống kê các khoản chi trong tháng</Text>
-      {/* <VPBankCard /> */}
-      {/* <CryptoPortfolio /> */}
-
-      {chartData.categories.length > 0 && chartData.series.length > 0 && (
-        <Summary data={chartData} />
-      )}
-
-      <View style={{ marginTop: ScaleUtils.floorVerticalScale(10), marginBottom: ScaleUtils.floorVerticalScale(-12) }}>
-        <Text style={{ fontSize: ScaleUtils.floorVerticalScale(12), fontWeight: "500" }}>Danh mục</Text>
-      </View>
-      <ButtonHome categories={categories} />
-      <Text style={styles.sectionTitle}>Giao dịch của bạn</Text>
       <FlatList
         data={Object.values(transactionSummaryState?.categoryTotals ?? {})}
         renderItem={({ item }) => <TransactionItem item={item} handleDetails={() => handleDetailsByCategory(item)} />}
@@ -146,19 +100,15 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: {
+
     flex: 1,
     paddingHorizontal: ScaleUtils.floorScale(10),
 
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: ScaleUtils.floorVerticalScale(5),
-  },
   sectionTitle: {
     fontSize: ScaleUtils.scaleFontSize(14),
     fontWeight: 'bold',
-    marginVertical: ScaleUtils.floorVerticalScale(5),
+    marginVertical: ScaleUtils.floorVerticalScale(10),
   },
   card: {
     padding: ScaleUtils.floorScale(20),

@@ -10,9 +10,9 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 const TransactionDetailsItem = ({ item, isEdit, onPressEdit, handleDelete }: { item: any, isEdit: boolean, onPressEdit?: () => void, handleDelete?: () => void }) => {
     const [showPrice, setShowPrice] = React.useState(false);
     return (
-        <View style={styles.transactionItem}>
-            <View style={styles.iconContainer}>
-                <TypeIcon type={item.category?.name} size={24} color={item.transaction_type == 'Chi tiêu' ? "red" : "green"} />
+        <View style={commonStyles.transactionItem}>
+            <View style={commonStyles.iconContainer}>
+                <TypeIcon type={item.category?.name} size={24} color={item.transaction_type == 'Chi tiêu' ? "#497ff2" : "#497ff2"} />
             </View>
             <View style={styles.transactionDetails}>
                 <Text style={styles.transactionTitle}>{item.title}</Text>
@@ -30,7 +30,7 @@ const TransactionDetailsItem = ({ item, isEdit, onPressEdit, handleDelete }: { i
                     </Text>
                     {item.transaction_type === 'Thu nhập' ? (
                         <TouchableOpacity onPress={() => setShowPrice(!showPrice)}>
-                            <MaterialIcons name={showPrice ? 'visibility' : 'visibility-off'} size={20} color="green" />
+                            <MaterialIcons name={showPrice ? 'visibility' : 'visibility-off'} size={20} color="#497ff2" />
                         </TouchableOpacity>
                     ) : null}
                     {/* <Text style={styles.percentage}>{item.percentage}</Text> */}
@@ -56,30 +56,6 @@ const TransactionDetailsItem = ({ item, isEdit, onPressEdit, handleDelete }: { i
 };
 
 const styles = StyleSheet.create({
-    transactionItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-        borderWidth: 1,
-        borderColor: '#f0f0f0',
-        marginVertical: ScaleUtils.scaleFontSize(4),
-        borderRadius: ScaleUtils.scaleFontSize(10),
-        paddingVertical: ScaleUtils.scaleFontSize(8),
-        paddingHorizontal: ScaleUtils.floorScale(8),
-        shadowColor: '#133b1e',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    iconContainer: {
-        width: ScaleUtils.floorScale(25),
-        height: ScaleUtils.floorVerticalScale(36),
-        borderRadius: ScaleUtils.floorScale(20),
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: ScaleUtils.floorScale(12),
-    },
     transactionDetails: {
         flex: 1,
 

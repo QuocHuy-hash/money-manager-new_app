@@ -12,6 +12,7 @@ import { renderCategoryModal } from '../RenderCategoryModal';
 import { renderTypeModal } from '../RenderTypeModal';
 import { KeyboardAvoidingView } from 'react-native';
 import { Platform } from 'react-native';
+import commonStyles from '@/utils/commonStyles';
 
 interface AddTransactionModalProps {
     visible: boolean;
@@ -92,7 +93,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
 
     return (
 
-            <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+        <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContainer}>
                         <Text style={styles.modalTitle}>Thêm mới giao dịch</Text>
@@ -140,24 +141,25 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
                             onChangeText={setNote}
                             multiline
                         />
+                        <View style={[commonStyles.row, { justifyContent: 'space-between', width: '100%' }]}>
+                            <TouchableOpacity style={[styles.addButton, { backgroundColor: "green" }]} onPress={handleAddTransaction}>
+                                <Text style={styles.addButtonText}>Thêm</Text>
+                                <MaterialIcons name="add-circle" size={24} color="white" />
+                            </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.addButton} onPress={handleAddTransaction}>
-                            <Text style={styles.addButtonText}>Thêm</Text>
-                            <MaterialIcons name="add-circle" size={24} color="white" />
-                        </TouchableOpacity>
+                            <TouchableOpacity style={[styles.addButton, { backgroundColor: "red" }]} onPress={onClose}>
+                                <Text style={styles.closeButtonText}>Hủy</Text>
+                            </TouchableOpacity>
+                        </View>
 
-                        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                            <Text style={styles.closeButtonText}>Hủy</Text>
-                        </TouchableOpacity>
                     </View>
                 </View>
-
-                {renderTypeModal(types, showTypeModal, setType, () => setShowTypeModal(false))}
-                {renderCategoryModal(categoryListState, showCategoryModal, (name, id) => {
-                    setCategory(name);
-                    setCategory_id(id);
-                }, () => setShowCategoryModal(false))}
-            </Modal>
+            {renderTypeModal(types, showTypeModal, setType, () => setShowTypeModal(false))}
+            {renderCategoryModal(categoryListState, showCategoryModal, (name, id) => {
+                setCategory(name);
+                setCategory_id(id);
+            }, () => setShowCategoryModal(false))}
+        </Modal>
     );
 };
 
@@ -166,12 +168,12 @@ export default memo(AddTransactionModal);
 const styles = StyleSheet.create({
     modalOverlay: {
         flex: 1,
-        justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContainer: {
         width: '90%',
+        marginTop: ScaleUtils.scaleFontSize(150),
         backgroundColor: 'white',
         borderRadius: ScaleUtils.scaleFontSize(10),
         padding: ScaleUtils.scaleFontSize(16),
@@ -193,22 +195,19 @@ const styles = StyleSheet.create({
     addButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'green',
-        paddingVertical: ScaleUtils.scaleFontSize(10),
+        paddingVertical: ScaleUtils.scaleFontSize(6),
         paddingHorizontal: ScaleUtils.scaleFontSize(20),
         borderRadius: ScaleUtils.scaleFontSize(6),
-        marginTop: ScaleUtils.scaleFontSize(10),
+        marginTop: ScaleUtils.scaleFontSize(4),
     },
     addButtonText: {
         color: 'white',
         fontSize: ScaleUtils.scaleFontSize(16),
         marginRight: ScaleUtils.scaleFontSize(10),
     },
-    closeButton: {
-        marginTop: ScaleUtils.scaleFontSize(10),
-    },
+
     closeButtonText: {
-        color: 'red',
+        color: 'white',
         fontSize: ScaleUtils.scaleFontSize(16),
     },
 

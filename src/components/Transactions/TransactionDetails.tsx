@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
-import { Animated, StyleSheet, Text, TouchableOpacity, View, FlatList } from 'react-native';
+import { Animated, StyleSheet, Text, TouchableOpacity, View, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ScaleUtils from '@/utils/ScaleUtils';
 import commonStyles from '@/utils/commonStyles';
@@ -7,7 +7,7 @@ import AddTransactionModal from './AddTransactionModal';
 import { Transaction } from '@/utils/types';
 import TransactionDetailsItem from './TransactionDetailsItem';
 
-const TransactionDetails = (data : any) => {
+const TransactionDetails = (data: any) => {
     const [activeTab, setActiveTab] = useState(1);
     const animatedValue = useRef(new Animated.Value(0)).current;
     const [modalVisible, setModalVisible] = useState(false);
@@ -51,6 +51,7 @@ const TransactionDetails = (data : any) => {
     };
 
     return (
+
         <View style={styles.tabContainer}>
             <View style={[commonStyles.row, commonStyles.jusBetween]}>
                 <View style={[commonStyles.row]}>
@@ -75,19 +76,17 @@ const TransactionDetails = (data : any) => {
                     style={[commonStyles.jusCenter, styles.btnAdd, commonStyles.row]}
                     onPress={() => setModalVisible(true)}
                 >
-                    <Text style={{ color: 'green', fontSize: ScaleUtils.scaleFontSize(12), fontWeight: 'bold' }}>
+                    <Text style={{ color: '#497ff2', fontSize: ScaleUtils.scaleFontSize(12), fontWeight: 'bold' }}>
                         Thêm mới
                     </Text>
-                    <MaterialIcons name="add-circle" size={20} color="green" />
+                    <MaterialIcons name="add-circle" size={20} color="#497ff2" />
                 </TouchableOpacity>
             </View>
-
             <AddTransactionModal
                 visible={modalVisible}
                 onClose={() => setModalVisible(false)}
                 onSubmit={handleAddTransaction}
             />
-
             {/* FlatList để hiển thị giao dịch */}
             <FlatList
                 data={data.transactionListState && Array.isArray(data.transactionListState) ? data.transactionListState.filter((item: any) =>
@@ -98,6 +97,7 @@ const TransactionDetails = (data : any) => {
                 ListEmptyComponent={
                     <Text style={{ textAlign: 'center', marginTop: 20 }}>Không có giao dịch nào</Text>
                 }
+                showsVerticalScrollIndicator={false}
             />
         </View>
     );
@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
     },
     tabText: {
         fontSize: ScaleUtils.scaleFontSize(12),
+        fontWeight: 'bold',
     },
     btnAdd: {
         borderRadius: ScaleUtils.scaleFontSize(10),

@@ -118,7 +118,7 @@ const LoginScreen = () => {
                         onPress={() => setIsRememberMe(!isRememberMe)}
                     >
                         <MaterialIcons
-                            name={isRememberMe ? 'checkbox' : 'square-outline'}
+                            name={isRememberMe ? 'check-box' : 'check-box-outline-blank'}
                             size={24}
                             color="#4A90E2"
                         />

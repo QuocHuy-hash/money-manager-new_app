@@ -1,4 +1,5 @@
 import TypeIcon from '@/common/renderTypeIcon';
+import commonStyles from '@/utils/commonStyles';
 import { formatCurrency, formatDate } from '@/utils/format';
 import ScaleUtils from '@/utils/ScaleUtils';
 import React from 'react';
@@ -10,10 +11,9 @@ interface handleDetails {
 const TransactionItem = ({ item, handleDetails }: handleDetails) => {
     if (item.categoryName === 'Lương') {return null;}
     return (
-        <TouchableOpacity style={styles.transactionItem} onPress={handleDetails}>
-            <View style={styles.iconContainer}>
-
-                <TypeIcon type={item?.categoryName} size={24} color="red" />
+        <TouchableOpacity style={commonStyles.transactionItem} onPress={handleDetails}>
+            <View style={commonStyles.iconContainer}>
+                <TypeIcon type={item?.categoryName} size={24} color="#497ff2" />
             </View>
             <View style={styles.transactionDetails}>
                 <Text style={styles.transactionTitle}>{item.categoryName}</Text>
@@ -30,30 +30,7 @@ const TransactionItem = ({ item, handleDetails }: handleDetails) => {
 };
 
 const styles = StyleSheet.create({
-    transactionItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-        borderRadius: ScaleUtils.floorScale(8),
-        borderWidth: 1,
-        borderColor: '#f0f0f0',
-        marginVertical: ScaleUtils.floorVerticalScale(3),
-        paddingVertical: ScaleUtils.scaleFontSize(4),
-        paddingHorizontal: ScaleUtils.floorScale(10),
-        shadowColor: '#133b1e',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    iconContainer: {
-        width: ScaleUtils.floorScale(30),
-        height: ScaleUtils.floorVerticalScale(36),
-        borderRadius: ScaleUtils.floorScale(20),
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: ScaleUtils.floorScale(12),
-    },
+    
     transactionDetails: {
         flex: 1,
     },
