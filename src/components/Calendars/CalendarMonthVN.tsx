@@ -1,10 +1,13 @@
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { View, FlatList, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import commonStyles from '@/utils/commonStyles';
 import ScaleUtils from '@/utils/ScaleUtils';
+interface VietnameseMonthPickerProps { 
+    onChangeMonth: (month: string) => void;
+}
 
-const VietnameseMonthPicker = () => {
+const VietnameseMonthPicker = ({ onChangeMonth }: VietnameseMonthPickerProps) => {
     const months = [
         'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
         'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12',
@@ -21,17 +24,19 @@ const VietnameseMonthPicker = () => {
         }
     }, []);
 
-    const handleScrollLeft = () => {
+    const handleScrollLeft = useCallback(() => {
         const newIndex = Math.max(selectedMonth - 1, 0);
         setSelectedMonth(newIndex);
+        onChangeMonth(newIndex.toString());
         flatListRef.current?.scrollToIndex({ index: newIndex, animated: true });
-    };
+    }, [selectedMonth]);
 
-    const handleScrollRight = () => {
+    const handleScrollRight = useCallback(() => {
         const newIndex = Math.min(selectedMonth + 1, months.length - 1);
         setSelectedMonth(newIndex);
+        onChangeMonth(newIndex.toString());
         flatListRef.current?.scrollToIndex({ index: newIndex, animated: true });
-    };
+    },[selectedMonth]);
 
     const renderMonth = ({ item, index }: { item: string; index: number }) => (
         <View
@@ -50,7 +55,6 @@ const VietnameseMonthPicker = () => {
             </Text>
         </View>
     );
-
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={handleScrollLeft} style={styles.iconContainer}>

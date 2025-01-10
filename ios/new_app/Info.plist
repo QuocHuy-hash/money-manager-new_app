@@ -126,5 +126,9 @@
 			</dict>
 		</array>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Chúng tôi cần truy cập camera để chụp ảnh.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Chúng tôi cần truy cập thư viện ảnh để chọn ảnh.</string>
 </dict>
 </plist>

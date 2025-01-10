@@ -1,27 +1,33 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, SafeAreaView, TouchableOpacity, Alert, Modal, Pressable } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ScaleUtils from '@/utils/ScaleUtils';
 import commonStyles from '@/utils/commonStyles';
+import { launchImageLibrary } from 'react-native-image-picker';
 
 import { useAppDispatch, useAppSelector } from '@/hooks/reduxHook';
-import { getUser } from '@/redux/userSlice';
+import { getUser, showAvatar, uploadAvatar } from '@/redux/userSlice';
 import { RootState } from '@/hooks/store';
 import Loading from '@/components/Loading';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '@/types/navigation';
+import { Button } from 'react-native';
+import { ImageUploadData } from '@/utils/types';
 
 // infoState {"api_key": null, "createdAt": "2024-10-06T03:31:59.858Z", "email": "huy343536@gmail.com", "firstName": "Quoc", "full_name": null, "id": 1, "lastName": "Huy", "password": "$2b$10$m10XLVlpgsQT4gZ6KFiTP.yXXLZeMm0IPCNmF03E.CAJThzolltmG", "phone_number": "0987654321", "status": "inactive", "token_device": null, "updatedAt": "2024-10-06T03:32:21.006Z", "userId": null, "user_name": "huy12345", "verify": true}
 
 
 const AccountView = () => {
-    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const infoState = useAppSelector((state: RootState) => state.users.info);
+  const avatarState = useAppSelector((state: RootState) => state.users.avatar);
   const dispatch = useAppDispatch();
-
+  const [imageUri, setImageUri] = React.useState<string | null>(null);
+  const [tempImageUri, setTempImageUri] = useState<string | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [productFile, setProductFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  
   useEffect(() => {
     getInformation()
   }, []);
@@ -34,10 +40,83 @@ const AccountView = () => {
     } finally {
       setIsLoading(false);
     }
-
-
   }, []);
+  useEffect(() => {
+    const getAvatar = async () => {
+      await dispatch(showAvatar());
+    }
+    getAvatar();
+  }, [avatarState]);
 
+  const handlePicker = () => {
+    const options = {
+      mediaType: 'photo' as const,
+      quality: 0.8 as const,
+    };
+
+    launchImageLibrary(options, (response) => {
+      if (response.didCancel) {
+        Alert.alert('Bạn đã hủy chọn ảnh.');
+      } else if (response.errorCode) {
+        Alert.alert('Lỗi', response.errorMessage || 'Đã xảy ra lỗi khi chọn ảnh.');
+      } else {
+        console.log("response: ", response);
+        // const asset = response ? response.assets[0] : "";
+        const uri = response.assets && response.assets[0].uri;
+        const fileName = response.assets && response.assets[0].fileName;
+        const type = response.assets && response.assets[0].type;
+        const fileToUpload = {
+          uri: uri,
+          name: fileName,
+          type: type,
+        };
+        if (response.assets && response.assets[0]) {
+          // setProductFile(fileToUpload);
+        }
+        if (uri) {
+          setImageUri(uri);
+          setTempImageUri(uri);
+          setModalVisible(true);
+        }
+      }
+    });
+  };
+
+  const handleConfirmImage = async (response: any) => {
+    if (tempImageUri && response.assets && response.assets[0]) {
+      setModalVisible(false);
+      setIsLoading(true);
+      try {
+        const imageData: ImageUploadData = {
+          uri: response.assets[0].uri,
+          type: response.assets[0].type || 'image/jpeg',  // Provide default type if needed
+          name: response.assets[0].fileName || 'image.jpg', // Provide default name if needed
+        };
+
+        const result = await dispatch(uploadAvatar(imageData));
+
+        if (uploadAvatar.fulfilled.match(result)) {
+          setImageUri(tempImageUri);
+          await dispatch(showAvatar());
+        } else {
+          Alert.alert('Error', 'Failed to upload image');
+        }
+      } catch (error) {
+        setIsLoading(false);
+        Alert.alert('Error', 'Failed to upload image');
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+
+  const handleCancelImage = () => {
+    setTempImageUri("");
+    setImageUri("");
+    setModalVisible(false);
+  };
   const handleLogOut = () => {
     navigation.navigate('LoginScreen');
   }
@@ -45,18 +124,18 @@ const AccountView = () => {
     <SafeAreaView style={styles.container}>
       <View style={[styles.header, commonStyles.row, commonStyles.alignCenter, commonStyles.jusBetween]}>
         <Text style={styles.headerText}>Profile</Text>
-        <TouchableOpacity style={styles.cameraButton}>
-          <MaterialIcons name="image" size={24} color="white" />
+        <TouchableOpacity style={styles.cameraButton} onPress={handlePicker}>
+          <MaterialIcons name="camera" size={24} color="white" />
         </TouchableOpacity>
       </View>
 
       <View style={styles.profileInfo}>
-        <Image
-          source={{ uri: 'https://example.com/profile-picture.jpg' }}
-          style={styles.profilePicture}
-        />
+          <Image
+            source={{ uri: avatarState ? avatarState : 'https://example.com/profile-picture.jpg' }}
+            style={styles.profilePicture}
+          />
         <View style={styles.onlineIndicator} />
-        <Text style={styles.name}>{`${infoState ? infoState.firstName : ""} ${infoState ? infoState.lastName: ""}`}</Text>
+        <Text style={styles.name}>{`${infoState ? infoState.firstName : ""} ${infoState ? infoState.lastName : ""}`}</Text>
         <Text style={styles.email}>{`${infoState ? infoState.email : ""}`}</Text>
       </View>
 
@@ -98,6 +177,35 @@ const AccountView = () => {
         </TouchableOpacity>
       </View>
       {isLoading && <Loading size="large" color="#ff6347" />}
+
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={handleCancelImage}
+        style={{}}
+      >
+        <View style={[commonStyles.jusCenter, commonStyles.alignCenter, { backgroundColor: 'rgba(0, 0, 0, 0.8)', flex: 1 }]}>
+          <View style={{ width: ScaleUtils.floorScale(360), height: ScaleUtils.floorVerticalScale(320), justifyContent: 'center', alignItems: 'center' }}>
+            {tempImageUri && (
+              <Image
+                source={{ uri: tempImageUri ? tempImageUri : "" }}
+                style={{
+                  width: ScaleUtils.floorScale(300), height: ScaleUtils.floorVerticalScale(270),
+                  borderRadius: ScaleUtils.scale(200)
+                }}
+              />
+            )}
+            <View style={{
+              width: ScaleUtils.floorScale(200),
+              height: ScaleUtils.floorVerticalScale(50), justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row'
+            }}>
+              <Button title="Hủy" onPress={handleCancelImage} color="red" />
+              <Button title="Xác nhận" onPress={() => handleConfirmImage({ assets: [{ uri: tempImageUri }] })} color="white" />
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
 
   );
@@ -141,18 +249,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#4CD964',
     position: 'absolute',
     borderWidth: 2,
-    top: 10,
-    right: 165,
+    top: ScaleUtils.floorVerticalScale(5),
+    right: ScaleUtils.floorScale(140),
     borderColor: 'white',
   },
   name: {
-    fontSize: 24,
+    fontSize: ScaleUtils.scaleFontSize(22),
     fontWeight: 'bold',
     color: 'white',
-    marginTop: 10,
+    marginTop: ScaleUtils.floorVerticalScale(8),
   },
   email: {
-    fontSize: 16,
+    fontSize: ScaleUtils.scaleFontSize(14),
     color: 'rgba(255, 255, 255, 0.8)',
     marginTop: 5,
   },
@@ -160,12 +268,12 @@ const styles = StyleSheet.create({
   accountDetails: {
     flex: 1,
     backgroundColor: 'white',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
+    borderTopLeftRadius: ScaleUtils.scale(20),
+    borderTopRightRadius: ScaleUtils.scale(20),
+    padding: ScaleUtils.scale(18),
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: ScaleUtils.scaleFontSize(16),
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 15,
@@ -173,20 +281,20 @@ const styles = StyleSheet.create({
   accountItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 15,
+    paddingVertical: ScaleUtils.verticalScale(15),
     borderBottomWidth: 1,
     borderBottomColor: '#EEE',
   },
   accountItemText: {
     flex: 1,
-    marginLeft: 15,
+    marginLeft: ScaleUtils.floorScale(10),
   },
   accountItemTitle: {
-    fontSize: 16,
+    fontSize: ScaleUtils.scaleFontSize(14),
     color: '#333',
   },
   accountItemSubtitle: {
-    fontSize: 14,
+    fontSize: ScaleUtils.scaleFontSize(12),
     color: '#666',
     marginTop: 2,
   },

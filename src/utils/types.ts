@@ -28,6 +28,15 @@ export interface InfoViewProps {
     createdAt: string;
     updatedAt: string;
 }
+export interface UserState {
+  token: string | null;
+  user: string | null;
+  info: any | null;
+  users: string | null;
+  avatar: string | null;
+  status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  error: string | null;
+}
 export interface Goal {
     id: number;
     user_id: number;
@@ -54,6 +63,11 @@ interface GoalProgressData {
     reportData: ReportData[];
     targetAmount: string;
     totalSaved: number;
+}
+export interface ImageUploadData {
+  uri: string;
+  type: string;
+  name: string;
 }
 export const types = [{ id: 1, name: 'Chi tiêu' }, { id: 2, name: 'Thu nhập' }, { id: 3, name: 'Tiết kiệm' }];
 
