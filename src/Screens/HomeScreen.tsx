@@ -1,25 +1,27 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, StatusBar } from 'react-native';
+import { StyleSheet, View, ScrollView, SafeAreaView, StatusBar } from 'react-native';
 import { useAppDispatch, useAppSelector } from '@/hooks/reduxHook';
 import { RootState } from '@/hooks/store';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import LinearGradient from 'react-native-linear-gradient';
 
 // Components
-import TransactionItem from '@/components/Transactions/TransactionItem';
 import SummaryItemDetails from '@/components/Transactions/SummaryItemDetails';
+import VietnameseMonthPicker from '@/components/Calendars/CalendarMonthVN';
+import {
+  Header,
+  BalanceSummaryCard,
+  CategoryTabs,
+  TransactionSection,
+  FloatingActionButton
+} from '@/components/Home';
 
 // Utils
 import ScaleUtils from '@/utils/ScaleUtils';
-import commonStyles from '@/utils/commonStyles';
-import { formatDateUK, getFirstDayOfMonth, getLastDayOfMonth, formatCurrency } from '@/utils/format';
+import { formatDateUK, getFirstDayOfMonth, getLastDayOfMonth } from '@/utils/format';
 
 // Redux actions
 import { getTransactionByCategories, getTransactionsSummary } from '@/redux/transactions.slice';
 import { getMonthReport, getSummaryReport } from '@/redux/reportSlice';
-import VietnameseMonthPicker from '@/components/Calendars/CalendarMonthVN';
 import { getTotalSavingsByMonth } from '@/redux/goalsSlice';
-import { Goal } from '@/utils/types';
 
 const HomeScreen = () => {
   const dispatch = useAppDispatch();
@@ -27,9 +29,6 @@ const HomeScreen = () => {
   // Lấy dữ liệu từ Redux store
   const transactionSummaryState = useAppSelector((state: RootState) => state.transaction.transactionSummary);
   const transactionByCategoryState = useAppSelector((state: RootState) => state.transaction.transactionByCategory);
-  // const reportMonth = useAppSelector((state: RootState) => state.report.reportMonth);
-  // const totalSavingsByMonth = useAppSelector((state: RootState) => state.goals.totalSavingsByMonth);
-  // const monthlySavings = useAppSelector((state: RootState) => state.transaction.monthlySavings);
 
   // Các state quản lý dữ liệu trong component
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
@@ -112,147 +111,54 @@ const HomeScreen = () => {
     setType(name);
   }, []);
 
-  // Cập nhật fromDate và toDate khi selectedMonth thay đổi, sau đó fetch lại dữ liệu
   const handleMonthChange = useCallback((month: string) => {
     const monthIndex = parseInt(month);
     setSelectedMonth(monthIndex);
-
-    // Cập nhật fromDate và toDate dựa trên tháng mới
-    // const newFromDate = getFirstDayOfMonth(new Date(new Date().getFullYear(), monthIndex));
-    // const newToDate = getLastDayOfMonth(new Date(new Date().getFullYear(), monthIndex));
-    // setFromDate(newFromDate);
-    // setToDate(newToDate);
   }, []);
 
-  const renderHeader = () => (
-    <View style={styles.header}>
-      <Text style={styles.headerMonth}>
-        {new Date(fromDate).toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' })}
-      </Text>
-      <TouchableOpacity style={styles.settingsButton}>
-        <MaterialIcons name="settings" size={24} color="#333" />
-      </TouchableOpacity>
-    </View>
-  );
+  const handleAddTransaction = () => {
+    // Handle adding new transaction
+    console.log('Add new transaction');
+  };
 
-  const renderSummaryCard = () => (
-    <LinearGradient
-      colors={['#4285F4', '#34A853']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 0 }}
-      style={styles.summaryCard}
-    >
-      <View style={styles.balanceContainer}>
-        <Text style={styles.balanceLabel}>Số dư</Text>
-        <Text style={styles.balanceAmount}>{formatCurrency(balance)}</Text>
-      </View>
-      <View style={styles.statsContainer}>
-        <View style={styles.statItem}>
-          <MaterialIcons name="arrow-downward" size={20} color="#34A853" />
-          <Text style={styles.statAmount}>{formatCurrency(transactionStats.income.toString())}</Text>
-          <Text style={styles.statLabel}>Thu nhập</Text>
-        </View>
-        <View style={styles.divider} />
-        <View style={styles.statItem}>
-          <MaterialIcons name="arrow-upward" size={20} color="#EA4335" />
-          <Text style={styles.statAmount}>{formatCurrency(transactionStats.expense.toString())}</Text>
-          <Text style={styles.statLabel}>Chi tiêu</Text>
-        </View>
-        <View style={styles.divider} />
-        <View style={styles.statItem}>
-          <MaterialIcons name="savings" size={20} color="#FBBC05" />
-          <Text style={styles.statAmount}>{formatCurrency(transactionStats.totalSavings.toString())}</Text>
-          <Text style={styles.statLabel}>Tiết kiệm</Text>
-        </View>
-      </View>
-    </LinearGradient>
-  );
-
-  const renderCategoryTabs = () => (
-    <View style={styles.categoryTabs}>
-      {categories && categories.map((category, index) => (
-        <TouchableOpacity
-          key={index}
-          style={[
-            styles.categoryTab,
-            type === category.name && styles.selectedCategoryTab
-          ]}
-          onPress={() => handleSelectType(category.name)}
-        >
-          <MaterialIcons
-            name={category.name === 'salary' ? 'attach-money' : 'shopping-cart'}
-            size={18}
-            color={type === category.name ? '#fff' : '#555'}
-          />
-          <Text style={[
-            styles.categoryTabText,
-            type === category.name && styles.selectedCategoryTabText
-          ]}>
-            {category.title}
-          </Text>
-          <Text style={[
-            styles.categoryTabAmount,
-            type === category.name && styles.selectedCategoryTabText
-          ]}>
-            {formatCurrency(category.amount)}
-          </Text>
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
-
-  const renderEmptyTransactions = () => (
-    <View style={styles.emptyContainer}>
-      <MaterialIcons name="receipt-long" size={60} color="#ccc" />
-      <Text style={styles.emptyText}>Không có giao dịch nào</Text>
-      <TouchableOpacity style={styles.addButton}>
-        <Text style={styles.addButtonText}>+ Thêm giao dịch mới</Text>
-      </TouchableOpacity>
-    </View>
-  );
-
-  const renderSectionHeader = () => (
-    <View style={styles.sectionHeader}>
-      <Text style={styles.sectionTitle}>Giao dịch gần đây</Text>
-      <TouchableOpacity>
-        <Text style={styles.viewAllText}>Xem tất cả</Text>
-      </TouchableOpacity>
-    </View>
-  );
+  const handleViewAllTransactions = () => {
+    // Handle viewing all transactions
+    console.log('View all transactions');
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#f5f5f5" barStyle="dark-content" />
-      {renderHeader()}
+      <Header
+        currentMonth={fromDate}
+        onSettingsPress={() => console.log('Settings pressed')}
+      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {renderSummaryCard()}
+        <BalanceSummaryCard
+          balance={balance}
+          income={transactionStats.income}
+          expense={transactionStats.expense}
+          savings={transactionStats.totalSavings}
+        />
         <View style={styles.monthPickerContainer}>
           <VietnameseMonthPicker onChangeMonth={handleMonthChange} />
         </View>
-        {renderCategoryTabs()}
-        {renderSectionHeader()}
-        <View style={styles.transactionsList}>
-          {Object.values(transactionSummaryState?.categoryTotals || {}).length > 0 ? (
-            Object.values(transactionSummaryState?.categoryTotals || {})
-              .filter((item: any) => item.categoryName !== 'Lương')
-              .map((item, index) => (
-                <TransactionItem
-                  key={index}
-                  item={item}
-                  handleDetails={() => handleDetailsByCategory(item)}
-                />
-              ))
-          ) : (
-            renderEmptyTransactions()
-          )}
-        </View>
+        <CategoryTabs
+          categories={categories}
+          selectedType={type}
+          onSelectType={handleSelectType}
+        />
+        <TransactionSection
+          transactions={Object.values(transactionSummaryState?.categoryTotals || {})}
+          onDetailPress={handleDetailsByCategory}
+          onViewAllPress={handleViewAllTransactions}
+          onAddTransactionPress={handleAddTransaction}
+        />
       </ScrollView>
-      <TouchableOpacity style={styles.floatingButton}>
-        <MaterialIcons name="add" size={24} color="#fff" />
-      </TouchableOpacity>
+      <FloatingActionButton onPress={handleAddTransaction} />
       <SummaryItemDetails
         visible={visibleDetailSummary}
         transactionByCategoryState={transactionByCategoryState}
@@ -270,166 +176,8 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: ScaleUtils.floorVerticalScale(80),
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: ScaleUtils.floorScale(16),
-    paddingVertical: ScaleUtils.floorVerticalScale(12),
-    backgroundColor: '#f5f5f5',
-  },
-  headerMonth: {
-    fontSize: ScaleUtils.scaleFontSize(18),
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  settingsButton: {
-    padding: ScaleUtils.scale(8),
-  },
-  summaryCard: {
-    margin: ScaleUtils.floorScale(16),
-    borderRadius: ScaleUtils.scale(16),
-    overflow: 'hidden',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  balanceContainer: {
-    padding: ScaleUtils.floorScale(16),
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.2)',
-  },
-  balanceLabel: {
-    color: 'rgba(255,255,255,0.8)',
-    fontSize: ScaleUtils.scaleFontSize(14),
-    marginBottom: ScaleUtils.floorVerticalScale(4),
-  },
-  balanceAmount: {
-    color: '#fff',
-    fontSize: ScaleUtils.scaleFontSize(24),
-    fontWeight: 'bold',
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    padding: ScaleUtils.floorScale(16),
-  },
-  statItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  statAmount: {
-    color: '#fff',
-    fontSize: ScaleUtils.scaleFontSize(14),
-    fontWeight: 'bold',
-    marginTop: ScaleUtils.floorVerticalScale(4),
-  },
-  statLabel: {
-    color: 'rgba(255,255,255,0.8)',
-    fontSize: ScaleUtils.scaleFontSize(12),
-    marginTop: ScaleUtils.floorVerticalScale(2),
-  },
-  divider: {
-    width: 1,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    marginHorizontal: ScaleUtils.floorScale(4),
-  },
   monthPickerContainer: {
     marginVertical: ScaleUtils.floorVerticalScale(10),
-  },
-  categoryTabs: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: ScaleUtils.floorScale(16),
-    marginBottom: ScaleUtils.floorVerticalScale(16),
-  },
-  categoryTab: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    paddingVertical: ScaleUtils.floorVerticalScale(12),
-    marginHorizontal: ScaleUtils.floorScale(6),
-    backgroundColor: '#fff',
-    borderRadius: ScaleUtils.scale(12),
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-  },
-  selectedCategoryTab: {
-    backgroundColor: '#4285F4',
-  },
-  categoryTabText: {
-    fontSize: ScaleUtils.scaleFontSize(12),
-    fontWeight: 'bold',
-    color: '#555',
-    marginTop: ScaleUtils.floorVerticalScale(4),
-  },
-  categoryTabAmount: {
-    fontSize: ScaleUtils.scaleFontSize(12),
-    color: '#333',
-    marginTop: ScaleUtils.floorVerticalScale(4),
-  },
-  selectedCategoryTabText: {
-    color: '#fff',
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: ScaleUtils.floorScale(16),
-    marginBottom: ScaleUtils.floorVerticalScale(8),
-  },
-  sectionTitle: {
-    fontSize: ScaleUtils.scaleFontSize(16),
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  viewAllText: {
-    fontSize: ScaleUtils.scaleFontSize(12),
-    color: '#4285F4',
-  },
-  transactionsList: {
-    paddingHorizontal: ScaleUtils.floorScale(16),
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: ScaleUtils.floorVerticalScale(30),
-  },
-  emptyText: {
-    marginTop: ScaleUtils.floorVerticalScale(16),
-    fontSize: ScaleUtils.scaleFontSize(14),
-    color: '#888',
-  },
-  addButton: {
-    marginTop: ScaleUtils.floorVerticalScale(16),
-    paddingVertical: ScaleUtils.floorVerticalScale(8),
-    paddingHorizontal: ScaleUtils.floorScale(16),
-    backgroundColor: '#4285F4',
-    borderRadius: ScaleUtils.scale(20),
-  },
-  addButtonText: {
-    color: '#fff',
-    fontSize: ScaleUtils.scaleFontSize(14),
-  },
-  floatingButton: {
-    position: 'absolute',
-    right: ScaleUtils.floorScale(14),
-    bottom: ScaleUtils.floorVerticalScale(14),
-    width: ScaleUtils.scale(40),
-    height: ScaleUtils.scale(40),
-    borderRadius: ScaleUtils.scale(28),
-    backgroundColor: '#4285F4',
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
   },
 });
 
