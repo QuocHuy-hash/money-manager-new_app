@@ -5,11 +5,11 @@ import ScaleUtils from '@/utils/ScaleUtils';
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 interface handleDetails {
-    handleDetails?: (item : any) => void
+    handleDetails?: (item: any) => void
     item: any
 }
 const TransactionItem = ({ item, handleDetails }: handleDetails) => {
-    if (item.categoryName === 'Lương') {return null;}
+    if (item.categoryName === 'Lương') { return null; }
     return (
         <TouchableOpacity style={commonStyles.transactionItem} onPress={handleDetails}>
             <View style={commonStyles.iconContainer}>
@@ -30,7 +30,7 @@ const TransactionItem = ({ item, handleDetails }: handleDetails) => {
 };
 
 const styles = StyleSheet.create({
-    
+
     transactionDetails: {
         flex: 1,
     },

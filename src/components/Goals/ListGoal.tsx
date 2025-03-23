@@ -43,6 +43,7 @@ const ListGoal = ({ data, fetchGoals }: { data: Goal[], fetchGoals: () => Promis
 
                 <Text style={[styles.text_size]}>Số tiền hiện tại: {formatCurrency(item.current_amount.toString())}</Text>
                 <Text style={[styles.text_size]}>Số tiền mục tiêu: {formatCurrency(item.target_amount.toString())}</Text>
+                <Text style={[styles.text_size]}>Tiết kiệm mỗi tháng: {formatCurrency(item.monthly_saving_amount.toString())}</Text>
 
                 <View style={[commonStyles.row, commonStyles.alignCenter, commonStyles.jusBetween]}>
                     <Text style={styles.text_time}>Bắt đầu: {new Date(item.createdAt).toLocaleDateString()}</Text>

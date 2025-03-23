@@ -91,8 +91,8 @@ const GoalDetailsView = () => {
     return (
         <View>
             <View style={[commonStyles.row, commonStyles.jusBetween, { width: "98%" }]} >
-                <View>
-                    <TouchableOpacity onPress={() => navigation.goBack() } style={[{
+                <View >
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={[{
                         position: 'absolute',
                         top: 0,
                         left: 0,
@@ -156,12 +156,16 @@ const GoalDetailsView = () => {
 
             <View style={styles.goalItem}>
                 {reportGoalState && (<GoalProgressChart data={reportGoalState} target={item.target_amount} />)}
-                {/* <Text style={[styles.text_size]}>Số tiền hiện tại: {formatCurrency(item.current_amount.toString())}</Text>
-                <Text style={[styles.text_size]}>Số tiền mục tiêu: {formatCurrency(item.target_amount.toString())}</Text>
-                <View style={[]}>
+                {/* <View style={[commonStyles.row, commonStyles.jusBetween]}>
+                    <Text style={[styles.text_size]}>Hiện tại: {formatCurrency(item.current_amount.toString())}</Text>
+                    <Text style={[styles.text_size]}>Mục tiêu: {formatCurrency(item.target_amount.toString())}</Text>
+                </View>
+                <View style={[commonStyles.row, commonStyles.jusBetween]}>
                     <Text style={styles.text_time}>Bắt đầu: {new Date(item.createdAt).toLocaleDateString()}</Text>
+                    <MaterialIcons name="access-time" size={20} color="green" />
                     <Text style={styles.text_time}>Kết thúc: {new Date(item.deadline).toLocaleDateString()}</Text>
                 </View> */}
+
             </View>
             <View>
                 <MongthyList data={monthlySavingState} />
@@ -180,10 +184,10 @@ const styles = StyleSheet.create({
         backgroundColor: "#f9f9f9",
     },
     text_time: {
-        fontSize: ScaleUtils.scaleFontSize(14),
+        fontSize: ScaleUtils.scaleFontSize(12),
     },
     text_size: {
-        fontSize: ScaleUtils.scaleFontSize(14),
+        fontSize: ScaleUtils.scaleFontSize(12),
     },
     modalView: {
         flex: 1,

@@ -72,16 +72,19 @@ const AddModal: React.FC<AddModalProps> = memo(({ visible, onClose, onSubmit }) 
     };
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined}>
-            <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+        <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={styles.keyboardAvoidingView}
+            >
                 <TouchableWithoutFeedback onPress={onClose}>
                     <View style={styles.modalOverlay}>
                         <View style={styles.modalContainer}>
                             <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
-                                <Text style={styles.modalTitle}>Thêm mục tiêu mới</Text>
+                                <Text style={styles.modalTitle}>Thêm mục tiêu tài chính</Text>
 
                                 <View style={styles.inputGroup}>
-                                    <Text style={styles.label}>Tên mục tiêu</Text>
+                                    <Text style={styles.label}>Tiêu đề</Text>
                                     <TextInput
                                         style={styles.input}
                                         placeholder="Nhập tên mục tiêu"
@@ -91,7 +94,7 @@ const AddModal: React.FC<AddModalProps> = memo(({ visible, onClose, onSubmit }) 
                                 </View>
 
                                 <View style={styles.inputGroup}>
-                                    <Text style={styles.label}>Số tiền mục tiêu</Text>
+                                    <Text style={styles.label}>Số tiền </Text>
                                     <TextInput
                                         style={styles.input}
                                         placeholder="Nhập số tiền mục tiêu"
@@ -123,7 +126,7 @@ const AddModal: React.FC<AddModalProps> = memo(({ visible, onClose, onSubmit }) 
                                 </View>
 
                                 <View style={styles.inputGroup}>
-                                    <Text style={styles.label}>Chọn ngày</Text>
+                                    <Text style={styles.label}>Ngày hoàn thành</Text>
                                     <TouchableOpacity style={styles.datePicker} onPress={() => setShowDatePicker(true)}>
                                         <Text>{formatDateTimeVietnamese(deadline)}</Text>
                                     </TouchableOpacity>
@@ -150,14 +153,17 @@ const AddModal: React.FC<AddModalProps> = memo(({ visible, onClose, onSubmit }) 
                         </View>
                     </View>
                 </TouchableWithoutFeedback>
-            </Modal>
-        </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
+        </Modal>
     );
 });
 
 export default memo(AddModal);
 
 const styles = StyleSheet.create({
+    keyboardAvoidingView: {
+        flex: 1,
+    },
     modalOverlay: {
         flex: 1,
         justifyContent: 'center',
@@ -180,10 +186,9 @@ const styles = StyleSheet.create({
     },
     inputGroup: {
         width: '100%',
-        marginBottom: ScaleUtils.scaleFontSize(12),
+        marginBottom: ScaleUtils.scaleFontSize(8),
     },
     label: {
-        marginBottom: 4,
         fontSize: ScaleUtils.scaleFontSize(14),
         color: '#555',
     },
@@ -192,7 +197,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#ddd',
         borderRadius: ScaleUtils.scaleFontSize(8),
-        padding: ScaleUtils.scaleFontSize(10),
+        padding: ScaleUtils.scaleFontSize(6),
         backgroundColor: '#f9f9f9',
     },
     datePicker: {
@@ -208,8 +213,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#4CAF50',
-        paddingVertical: ScaleUtils.scaleFontSize(12),
-        paddingHorizontal: ScaleUtils.scaleFontSize(20),
+        paddingVertical: ScaleUtils.scaleFontSize(8),
+        paddingHorizontal: ScaleUtils.scaleFontSize(16),
         borderRadius: ScaleUtils.scaleFontSize(8),
         marginTop: ScaleUtils.scaleFontSize(16),
     },

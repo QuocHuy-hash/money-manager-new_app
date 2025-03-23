@@ -5,7 +5,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import ScaleUtils from '@/utils/ScaleUtils';
 import { formatCurrency, formatDateTimeVietnamese, formatDateUK, getFirstDayOfMonth, getLastDayOfMonth, getTimeFromStartOfYearToNow } from '@/utils/format';
 import { useAppDispatch, useAppSelector } from '@/hooks/reduxHook';
-import { addTransaction, getTransactionCategorys, getTransactions, getTransactionsSummary } from '@/redux/transactions.slice';
+import { addTransaction, getTransactionCategories, getTransactions, getTransactionsSummary } from '@/redux/transactions.slice';
 import { Transaction, types } from '@/utils/types';
 import { RootState } from '@/hooks/store';
 import { renderCategoryModal } from '../RenderCategoryModal';
@@ -38,7 +38,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
 
     useEffect(() => {
         const getCategory = async () => {
-            await dispatch(getTransactionCategorys());
+            await dispatch(getTransactionCategories());
         };
         getCategory();
     }, []);
@@ -94,6 +94,10 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
     return (
 
         <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={styles.keyboardAvoidingView}
+            >
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContainer}>
                         <Text style={styles.modalTitle}>Thêm mới giao dịch</Text>
@@ -154,11 +158,12 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
 
                     </View>
                 </View>
-            {renderTypeModal(types, showTypeModal, setType, () => setShowTypeModal(false))}
-            {renderCategoryModal(categoryListState, showCategoryModal, (name, id) => {
-                setCategory(name);
-                setCategory_id(id);
-            }, () => setShowCategoryModal(false))}
+                {renderTypeModal(types, showTypeModal, setType, () => setShowTypeModal(false))}
+                {renderCategoryModal(categoryListState, showCategoryModal, (name, id) => {
+                    setCategory(name);
+                    setCategory_id(id);
+                }, () => setShowCategoryModal(false))}
+            </KeyboardAvoidingView>
         </Modal>
     );
 };
@@ -166,6 +171,9 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
 export default memo(AddTransactionModal);
 
 const styles = StyleSheet.create({
+    keyboardAvoidingView: {
+        flex: 1,
+    },
     modalOverlay: {
         flex: 1,
         alignItems: 'center',
