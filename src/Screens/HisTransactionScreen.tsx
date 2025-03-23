@@ -8,7 +8,7 @@ import ScaleUtils from '@/utils/ScaleUtils';
 import { useAppDispatch, useAppSelector } from '@/hooks/reduxHook';
 import { getTransactionByCategories, getTransactions, getTransactionsSummary } from '@/redux/transactions.slice';
 import { RootState } from '@/hooks/store';
-import { formatDateUK, getFirstDayOfMonth, getLastDayOfMonth, getTimeFromStartOfYearToNow } from '@/utils/format';
+import { formatDateUK, getLastDayOfMonth, getTimeFromStartOfYearToNow } from '@/utils/format';
 import DateRangePicker from '@/components/DateRangerPicker';
 import commonStyles from '@/utils/commonStyles';
 import SummaryItemDetails from '@/components/Transactions/SummaryItemDetails';
@@ -22,23 +22,19 @@ const TransactionList: React.FC = () => {
     const transactionListState = useAppSelector((state: RootState) => state.transaction.transactionList);
     const transactionSummaryState = useAppSelector((state: RootState) => state.transaction.transactionSummary);
     const transactionByCategoryState = useAppSelector((state: RootState) => state.transaction.transactionByCategory);
-    
-    // Quản lý ngày tháng riêng cho Transaction screen
-    const [fromDate, setFromDate] = useState(getFirstDayOfMonth());
-    const [toDate, setToDate] = useState(getLastDayOfMonth());
+
+    const [fromDate, setFromDate] = useState(getTimeFromStartOfYearToNow().startOfYear); // Lấy ngày bắt đầu của năm
+    const [toDate, setToDate] = useState(getLastDayOfMonth()); // Lấy ngày cuối cùng của tháng hiện tại
 
     const [activeTab, setActiveTab] = useState(1);
     const tabIndicatorPosition = useRef(new Animated.Value(TAB_WIDTH)).current;
     const [visible, setVisible] = useState(false);
     const [visibleDetailSummary, setVisibleDetailSummary] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
 
-    // Tạo object data từ fromDate và toDate
-    const getQueryData = () => ({
+    const data = {
         startDate: formatDateUK(fromDate),
         endDate: formatDateUK(toDate),
-    });
-    
+    }
     useEffect(() => {
         Animated.spring(tabIndicatorPosition, {
             toValue: activeTab * TAB_WIDTH,
@@ -46,69 +42,46 @@ const TransactionList: React.FC = () => {
         }).start();
     }, [activeTab]);
 
-    // Load dữ liệu ban đầu
     useEffect(() => {
-        refreshTransactionData();
+        getTransactionSummary(data);
+        fetchTransactions(data);
     }, []);
-
-    // Refresh dữ liệu khi ngày tháng thay đổi
-    useEffect(() => {
-        refreshTransactionData();
-    }, [fromDate, toDate]);
-
-    const refreshTransactionData = async () => {
-        try {
-            setIsLoading(true);
-            const data = getQueryData();
-            await Promise.all([
-                getTransactionSummary(data),
-                fetchTransactions(data)
-            ]);
-        } catch (error) {
-            console.error('Lỗi khi tải dữ liệu giao dịch:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
 
     const handleTabPress = (tabIndex: number) => {
         setActiveTab(tabIndex);
     };
 
     const getTransactionSummary = async (data: any) => {
-        return dispatch(getTransactionsSummary(data));
+        await dispatch(getTransactionsSummary(data));
     };
-    
     const fetchTransactions = async (data: any) => {
-        return dispatch(getTransactions(data));
+        await dispatch(getTransactions(data));
     };
 
-    const handleConfirm = (startDate: string, endDate: string) => {
+    const handleConfirm = (startDate: any, endDate: any) => {
         if (startDate && endDate) {
-            // Chuyển đổi string date sang Date object
-            const fromDateObj = new Date(startDate.split('-').join('/'));
-            const toDateObj = new Date(endDate.split('-').join('/'));
-            
-            // Cập nhật state trong component
-            setFromDate(fromDateObj);
-            setToDate(toDateObj);
-            
-            setVisible(false);
+            const data = {
+                startDate,
+                endDate
+            }
+            getTransactionSummary(data);
+            fetchTransactions(data);
         }
+        setVisible(false);
     };
-    
     const handleDetailsByCategory = async (item: any) => {
         const data = {
-            ...getQueryData(),
+            startDate: formatDateUK(fromDate),
+            endDate: formatDateUK(toDate),
             categoryId: item.categoryId
-        };
+        }
         const res = await dispatch(getTransactionByCategories(data));
         if (res?.meta.requestStatus === "fulfilled") {
             setVisibleDetailSummary(true);
         }
-    };
-
+    }
     return (
+
         <SafeAreaView style={styles.container}>
             <DateRangePicker
                 visible={visible}
@@ -134,39 +107,32 @@ const TransactionList: React.FC = () => {
                 <TouchableOpacity onPress={() => setVisible(true)} style={[styles.tab, commonStyles.row]}>
                     <MaterialIcons name="edit-calendar" size={26} color="#007AFF" />
                 </TouchableOpacity>
+
             </View>
 
-            {isLoading ? (
-                <View style={styles.loadingContainer}>
-                    <Text>Đang tải dữ liệu...</Text>
-                </View>
-            ) : (
-                <>
-                    {activeTab === 1 && (
-                        <FlatList
-                            style={{ paddingHorizontal: ScaleUtils.floorScale(10) }}
-                            data={Object.values(transactionSummaryState?.categoryTotals ?? {})}
-                            renderItem={({ item }) => <TransactionItem item={item} handleDetails={() => handleDetailsByCategory(item)} />}
-                            keyExtractor={(item, index) => index.toString()}
-                            ListEmptyComponent={
-                                <Text style={{ textAlign: 'center', marginTop: 20 }}>Không có giao dịch nào</Text>
-                            }
-                        />
-                    )}
-                    {activeTab === 0 && (
-                        <TransactionDetails transactionListState={transactionListState} />
-                    )}
-                    {activeTab === 2 && (
-                        <Reports customDateRange={{ fromDate, toDate }} />
-                    )}
-                </>
+            {activeTab == 1 && (
+                <FlatList
+                    style={{ paddingHorizontal: ScaleUtils.floorScale(10) }}
+                    data={Object.values(transactionSummaryState?.categoryTotals ?? {})}
+                    renderItem={({ item }) => <TransactionItem item={item} handleDetails={() => handleDetailsByCategory(item)} />}
+                    keyExtractor={(item, index) => index.toString()}
+                    ListEmptyComponent={
+                        <Text style={{ textAlign: 'center', marginTop: 20 }}>Không có giao dịch nào</Text>
+                    }
+                />
             )}
-
             <SummaryItemDetails
                 visible={visibleDetailSummary}
                 transactionByCategoryState={transactionByCategoryState}
                 setVisibleDetailSummary={setVisibleDetailSummary}
             />
+            {activeTab == 0 && (
+                <TransactionDetails transactionListState={transactionListState} />
+            )}
+            {/* line */}
+            {activeTab == 2 && (
+                <Reports />
+            )}
         </SafeAreaView>
     );
 };
@@ -211,11 +177,6 @@ const styles = StyleSheet.create({
         marginVertical: ScaleUtils.floorVerticalScale(10),
     },
     datePickerButton: {
-        alignItems: 'center',
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
         alignItems: 'center',
     },
 });

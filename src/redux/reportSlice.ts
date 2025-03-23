@@ -7,7 +7,6 @@ import axios from 'axios';
 interface ReportState {
   dailyReport: any;
   summaryReport: any;
-  reportMonth: any;
   goalsReport: any;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
@@ -17,7 +16,6 @@ interface ReportState {
 const initialState: ReportState = {
   dailyReport: null,
   summaryReport: null,
-  reportMonth: null,
   goalsReport: null,
   status: 'idle',
   error: null,
@@ -50,15 +48,6 @@ export const getSummaryReport = createAsyncThunk(
   async (data: {startDate: string; endDate: string; type: number}) => {
     return await makeRequest(
       `/report/expense-summary?startDate=${data.startDate}&endDate=${data.endDate}&type=${data.type}`,
-      'get',
-    );
-  },
-);
-export const getMonthReport = createAsyncThunk(
-  'report/summary-month',
-  async (data: {startDate: string; endDate: string}) => {
-    return await makeRequest(
-      `/report/summary?startDate=${data.startDate}&endDate=${data.endDate}`,
       'get',
     );
   },
@@ -96,18 +85,6 @@ const reportSlice = createSlice({
         state.error = null;
       })
       .addCase(getGoalReport.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.error.message || null;
-      })
-      .addCase(getMonthReport.pending, state => {
-        state.status = 'loading';
-      })
-      .addCase(getMonthReport.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.reportMonth = action.payload;
-        state.error = null;
-      })
-      .addCase(getMonthReport.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message || null;
       });
