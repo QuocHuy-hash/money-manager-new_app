@@ -27,16 +27,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: ScaleUtils.floorScale(16),
-    paddingVertical: ScaleUtils.floorVerticalScale(12),
+    paddingVertical: ScaleUtils.floorVerticalScale(8),
     backgroundColor: '#f5f5f5',
   },
   headerMonth: {
-    fontSize: ScaleUtils.scaleFontSize(18),
+    fontSize: ScaleUtils.scaleFontSize(16),
     fontWeight: 'bold',
     color: '#333',
   },
   settingsButton: {
-    padding: ScaleUtils.scale(8),
+    // padding: ScaleUtils.scale(8),
   },
 });
 

@@ -19,14 +19,14 @@ export const formatDateTimeVietnamese = (date: Date) => {
     const timeStr = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
     return `${day}, ${dateStr} ${timeStr}`;
 };
-export const getFirstDayOfMonth = () => {
-    const date = new Date();
-    return new Date(date.getFullYear(), date.getMonth(), 1);
+export const getFirstDayOfMonth = (date?: Date) => {
+    const baseDate = date || new Date();
+    return new Date(baseDate.getFullYear(), baseDate.getMonth(), 1);
 };
 
-export const getLastDayOfMonth = () => {
-    const date = new Date();
-    return new Date(date.getFullYear(), date.getMonth() + 1, 0);
+export const getLastDayOfMonth = (date?: Date) => {
+    const baseDate = date || new Date();
+    return new Date(baseDate.getFullYear(), baseDate.getMonth() + 1, 0);
 };
 export const getTimeFromStartOfYearToNow = () => {
     const currentDate = new Date();

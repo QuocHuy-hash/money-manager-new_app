@@ -5,41 +5,70 @@ import commonStyles from '@/utils/commonStyles';
 import ScaleUtils from '@/utils/ScaleUtils';
 interface VietnameseMonthPickerProps { 
     onChangeMonth: (month: string) => void;
+    initialMonth?: number;
 }
 
-const VietnameseMonthPicker = ({ onChangeMonth }: VietnameseMonthPickerProps) => {
+const VietnameseMonthPicker = ({ onChangeMonth, initialMonth }: VietnameseMonthPickerProps) => {
     const months = [
         'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
         'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12',
     ];
 
     const currentMonth = new Date().getMonth();
-    const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+    const [selectedMonth, setSelectedMonth] = useState(initialMonth !== undefined ? initialMonth : currentMonth);
     const flatListRef = useRef<FlatList>(null);
 
     // Scroll to the current month initially
     useEffect(() => {
         if (flatListRef.current) {
-            flatListRef.current.scrollToIndex({ index: currentMonth, animated: true });
+            // Skip the scroll if it's already visible
+            flatListRef.current.scrollToIndex({
+                index: selectedMonth,
+                animated: true,
+                viewPosition: 0.5 // Center the selected month
+            });
         }
     }, []);
+
+    // Update selectedMonth when initialMonth changes
+    useEffect(() => {
+        if (initialMonth !== undefined && initialMonth !== selectedMonth) {
+            setSelectedMonth(initialMonth);
+            
+            // Scroll to the newly selected month
+            if (flatListRef.current) {
+                flatListRef.current.scrollToIndex({
+                    index: initialMonth,
+                    animated: true,
+                    viewPosition: 0.5 // Center the selected month
+                });
+            }
+        }
+    }, [initialMonth]);
 
     const handleScrollLeft = useCallback(() => {
         const newIndex = Math.max(selectedMonth - 1, 0);
         setSelectedMonth(newIndex);
         onChangeMonth(newIndex.toString());
         flatListRef.current?.scrollToIndex({ index: newIndex, animated: true });
-    }, [selectedMonth]);
+    }, [selectedMonth, onChangeMonth]);
 
     const handleScrollRight = useCallback(() => {
         const newIndex = Math.min(selectedMonth + 1, months.length - 1);
         setSelectedMonth(newIndex);
         onChangeMonth(newIndex.toString());
         flatListRef.current?.scrollToIndex({ index: newIndex, animated: true });
-    },[selectedMonth]);
+    },[selectedMonth, onChangeMonth]);
+
+    const handleMonthPress = useCallback((index: number) => {
+        setSelectedMonth(index);
+        onChangeMonth(index.toString());
+        flatListRef.current?.scrollToIndex({ index, animated: true });
+    }, [onChangeMonth]);
 
     const renderMonth = ({ item, index }: { item: string; index: number }) => (
-        <View
+        <TouchableOpacity
+            onPress={() => handleMonthPress(index)}
             style={[
                 styles.monthButton,
                 selectedMonth === index && styles.selectedMonthButton,
@@ -53,8 +82,9 @@ const VietnameseMonthPicker = ({ onChangeMonth }: VietnameseMonthPickerProps) =>
             >
                 {item}
             </Text>
-        </View>
+        </TouchableOpacity>
     );
+
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={handleScrollLeft} style={styles.iconContainer}>
@@ -73,7 +103,7 @@ const VietnameseMonthPicker = ({ onChangeMonth }: VietnameseMonthPickerProps) =>
                     offset: ScaleUtils.scale(60) * index,
                     index,
                 })}
-                initialScrollIndex={currentMonth}
+                initialScrollIndex={selectedMonth}
             />
             <TouchableOpacity onPress={handleScrollRight} style={styles.iconContainer}>
                 <MaterialIcons name="chevron-right" size={30} color="#fff" />

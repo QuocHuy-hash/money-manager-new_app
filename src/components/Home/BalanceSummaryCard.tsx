@@ -14,49 +14,56 @@ interface BalanceSummaryCardProps {
 
 const BalanceSummaryCard = ({ balance, income, expense, savings }: BalanceSummaryCardProps) => {
   return (
-    <LinearGradient
-      colors={['#4285F4', '#34A853']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 0 }}
-      style={styles.summaryCard}
-    >
-      <View style={styles.balanceContainer}>
-        <Text style={styles.balanceLabel}>Số dư</Text>
-        <Text style={styles.balanceAmount}>{formatCurrency(balance)}</Text>
-      </View>
-      <View style={styles.statsContainer}>
-        <View style={styles.statItem}>
-          <MaterialIcons name="arrow-downward" size={20} color="#34A853" />
-          <Text style={styles.statAmount}>{formatCurrency(income.toString())}</Text>
-          <Text style={styles.statLabel}>Thu nhập</Text>
+    <View style={styles.cardContainer}>
+      <LinearGradient
+        colors={['#4285F4', '#34A853']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.summaryCard}
+      >
+        <View style={styles.balanceContainer}>
+          <Text style={styles.balanceLabel}>Số dư</Text>
+          <Text style={styles.balanceAmount}>{formatCurrency(balance)}</Text>
         </View>
-        <View style={styles.divider} />
-        <View style={styles.statItem}>
-          <MaterialIcons name="arrow-upward" size={20} color="#EA4335" />
-          <Text style={styles.statAmount}>{formatCurrency(expense.toString())}</Text>
-          <Text style={styles.statLabel}>Chi tiêu</Text>
+        <View style={styles.statsContainer}>
+          <View style={styles.statItem}>
+            <MaterialIcons name="arrow-downward" size={20} color="#34A853" />
+            <Text style={styles.statAmount}>{formatCurrency(income.toString())}</Text>
+            <Text style={styles.statLabel}>Thu nhập</Text>
+          </View>
+          <View style={styles.divider} />
+          <View style={styles.statItem}>
+            <MaterialIcons name="arrow-upward" size={20} color="#EA4335" />
+            <Text style={styles.statAmount}>{formatCurrency(expense.toString())}</Text>
+            <Text style={styles.statLabel}>Chi tiêu</Text>
+          </View>
+          <View style={styles.divider} />
+          <View style={styles.statItem}>
+            <MaterialIcons name="savings" size={20} color="#FBBC05" />
+            <Text style={styles.statAmount}>{formatCurrency(savings.toString())}</Text>
+            <Text style={styles.statLabel}>Tiết kiệm</Text>
+          </View>
         </View>
-        <View style={styles.divider} />
-        <View style={styles.statItem}>
-          <MaterialIcons name="savings" size={20} color="#FBBC05" />
-          <Text style={styles.statAmount}>{formatCurrency(savings.toString())}</Text>
-          <Text style={styles.statLabel}>Tiết kiệm</Text>
-        </View>
-      </View>
-    </LinearGradient>
+      </LinearGradient>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  summaryCard: {
+  cardContainer: {
     margin: ScaleUtils.floorScale(16),
     borderRadius: ScaleUtils.scale(16),
     overflow: 'hidden',
+    backgroundColor: '#fff',
     elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+  },
+  summaryCard: {
+    borderRadius: ScaleUtils.scale(16),
+    overflow: 'hidden',
   },
   balanceContainer: {
     padding: ScaleUtils.floorScale(16),

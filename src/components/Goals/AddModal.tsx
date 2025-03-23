@@ -5,7 +5,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import ScaleUtils from '@/utils/ScaleUtils';
 import { formatCurrency, formatDateTimeVietnamese } from '@/utils/format';
 import { useAppDispatch } from '@/hooks/reduxHook';
-import { getTransactionCategorys } from '@/redux/transactions.slice';
+import { getTransactionCategories } from '@/redux/transactions.slice';
 import { Goal } from '@/utils/types';
 import commonStyles from '@/utils/commonStyles';
 import { createGoals, getGoals } from '@/redux/goalsSlice';
@@ -30,7 +30,7 @@ const AddModal: React.FC<AddModalProps> = memo(({ visible, onClose, onSubmit }) 
 
     useEffect(() => {
         const getCategory = async () => {
-            await dispatch(getTransactionCategorys());
+            await dispatch(getTransactionCategories());
         };
         getCategory();
     }, []);
