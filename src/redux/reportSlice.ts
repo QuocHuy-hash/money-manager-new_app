@@ -7,6 +7,7 @@ import axios from 'axios';
 interface ReportState {
   dailyReport: any;
   summaryReport: any;
+  yearlyReport: any;
   goalsReport: any;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
@@ -16,6 +17,7 @@ interface ReportState {
 const initialState: ReportState = {
   dailyReport: null,
   summaryReport: null,
+  yearlyReport: null,
   goalsReport: null,
   status: 'idle',
   error: null,
@@ -58,6 +60,12 @@ export const getGoalReport = createAsyncThunk(
     return await makeRequest(`/report/goal?goalId=${goalId}`, 'get');
   },
 );
+export const getYearlyReport = createAsyncThunk(
+  'report/yearly-report',
+  async () => {
+    return await makeRequest(`/report/get-report-by-year?year=2025`, 'get');
+  },
+);
 const reportSlice = createSlice({
   name: 'goals',
   initialState,
@@ -85,6 +93,18 @@ const reportSlice = createSlice({
         state.error = null;
       })
       .addCase(getGoalReport.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message || null;
+      })
+      .addCase(getYearlyReport.pending, state => {
+        state.status = 'loading';
+      })
+      .addCase(getYearlyReport.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.yearlyReport = action.payload;
+        state.error = null;
+      })
+      .addCase(getYearlyReport.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message || null;
       });

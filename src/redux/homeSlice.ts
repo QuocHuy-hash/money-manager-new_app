@@ -60,7 +60,7 @@ export const getHomeTransactionByCategories = createAsyncThunk(
   'home/getTransactionByCategories',
   async (data: {startDate: string; endDate: string; categoryId: number}) => {
     return await makeRequest(
-      `/transaction/by-category?startDate=${data.startDate}&endDate=${data.endDate}&categoryId=${data.categoryId}`,
+      `/transaction/get-by-category?startDate=${data.startDate}&endDate=${data.endDate}&categoryId=${data.categoryId}`,
       'get',
     );
   },

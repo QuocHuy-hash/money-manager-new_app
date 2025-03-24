@@ -56,17 +56,17 @@ const HomeScreen = () => {
   const fetchData = useCallback(async (data: any) => {
     // Tạo một chuỗi định danh cho tháng hiện tại để tránh fetch trùng lặp
     const monthIdentifier = `${fromDate.getFullYear()}-${fromDate.getMonth() + 1}`;
-    
+
     // Nếu đã fetch dữ liệu cho tháng này rồi thì bỏ qua
     if (currentMonthRef.current === monthIdentifier) {
       console.log('Skipping data fetch - already loaded for:', monthIdentifier);
       return;
     }
-    
+
     try {
       setIsLoading(true);
       console.log('Fetching data for month:', monthIdentifier);
-      
+
       // Gọi các action từ homeSlice thay vì các slice chung
       await dispatch(getHomeTransactionsSummary(data));
       const reportResponse = await dispatch(getHomeMonthReport(data));
@@ -99,7 +99,7 @@ const HomeScreen = () => {
           savings: 0,
           totalSavings,
         });
-        
+
         // Cập nhật tháng đã fetch
         currentMonthRef.current = monthIdentifier;
       }
@@ -108,7 +108,7 @@ const HomeScreen = () => {
     } finally {
       setIsLoading(false);
     }
-  // Chỉ phụ thuộc vào dispatch và selectedMonth, không phụ thuộc vào đối tượng Date
+    // Chỉ phụ thuộc vào dispatch và selectedMonth, không phụ thuộc vào đối tượng Date
   }, [dispatch, selectedMonth]);
 
   // Fetch dữ liệu khi component mount hoặc khi selectedMonth thay đổi
@@ -126,7 +126,7 @@ const HomeScreen = () => {
     }
   }, [fetchData, selectedMonth]);
 
-  const handleDetailsByCategory = async (item: any) => {
+  const handleDetailsByCategory = useCallback(async (item: any) => {
     const data = {
       startDate: formatDateUK(fromDate),
       endDate: formatDateUK(toDate),
@@ -136,7 +136,7 @@ const HomeScreen = () => {
     if (res?.meta.requestStatus === "fulfilled") {
       setVisibleDetailSummary(true);
     }
-  };
+  }, [dispatch]);
 
   const handleSelectType = useCallback((name: string) => {
     setType(name);

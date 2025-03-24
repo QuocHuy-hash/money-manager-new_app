@@ -82,6 +82,39 @@ export interface ImageUploadData {
   type: string;
   name: string;
 }
+
+//yearly data
+export type YearlyFinancialData = {
+  months: string[];
+  income: number[];
+  expenses: number[];
+  savings: number[];
+  categoryBreakdown: {
+    [key: string]: number;
+  };
+  // Yearly totals
+  yearlyTotals: {
+    totalIncome: number;
+    totalExpenses: number;
+    totalSavings: number;
+  };
+};
+
+// Nếu bạn muốn giữ dạng mảng như mẫu của bạn
+export const mockYearlyTypes: YearlyFinancialData[] = [
+  {
+    months: [],
+    income: [],
+    expenses: [],
+    savings: [],
+    categoryBreakdown: {},
+    yearlyTotals: {
+      totalIncome: 0,
+      totalExpenses: 0,
+      totalSavings: 0,
+    },
+  },
+];
 export const types = [
   {id: 1, name: 'Chi tiêu'},
   {id: 2, name: 'Thu nhập'},
