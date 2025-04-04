@@ -27,6 +27,7 @@ import {
 } from '@/redux/homeSlice';
 import { getTotalSavingsByMonth } from '@/redux/goalsSlice';
 import { setSelectedMonth } from '@/redux/dateRangeSlice';
+import CryptoPortfolio from '@/components/Crypto/CryptoPortfolio';
 
 const HomeScreen = () => {
   const dispatch = useAppDispatch();
@@ -113,7 +114,6 @@ const HomeScreen = () => {
 
   // Fetch dữ liệu khi component mount hoặc khi selectedMonth thay đổi
   useEffect(() => {
-    // Khi selectedMonth thay đổi, fromDate và toDate đã được cập nhật trong dateRangeSlice
     // Tạo data object từ các Date đã chuyển đổi
     const data = {
       startDate: formatDateUK(fromDate),
@@ -205,6 +205,7 @@ const HomeScreen = () => {
               selectedType={type}
               onSelectType={handleSelectType}
             />
+            {/* <CryptoPortfolio /> */}
             <TransactionSection
               transactions={Object.values(transactionSummaryState?.categoryTotals || {})}
               onDetailPress={handleDetailsByCategory}

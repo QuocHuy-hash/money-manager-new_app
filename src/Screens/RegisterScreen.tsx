@@ -87,7 +87,7 @@ const RegisterScreen: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const initialState: FormData = {
-        email: 'Huyhqpk02638@fpt.edu.vn',
+        email: '',
         password: '123456',
         userName: 'huy123456',
         firstName: 'Hoang',
@@ -113,7 +113,7 @@ const RegisterScreen: React.FC = () => {
                     Alert.alert('Lỗi!', 'Email đã được đăng ký!');
                 }
             } catch (error) {
-                Alert.alert('Lỗi!', 'Lỗi dăng ký vio lòng thử lại!');
+                Alert.alert('Lỗi!', 'Lỗi đăng ký vui lòng thử lại!');
 
             } finally {
                 setIsLoading(false);

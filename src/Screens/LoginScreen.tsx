@@ -20,8 +20,8 @@ const LoginScreen = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const dispatch = useAppDispatch();
     const [isRememberMe, setIsRememberMe] = useState(false);
-    const [userName, setUserName] = useState('huy12345');
-    const [password, setPassword] = useState('123456');
+    const [userName, setUserName] = useState('');
+    const [password, setPassword] = useState('');
     const [showPass, setShowPass] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const handleLoginWithPassword = async () => {

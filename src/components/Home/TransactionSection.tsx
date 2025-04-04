@@ -11,13 +11,13 @@ interface TransactionSectionProps {
   onAddTransactionPress: () => void;
 }
 
-const TransactionSection = ({ 
-  transactions, 
-  onDetailPress, 
+const TransactionSection = ({
+  transactions,
+  onDetailPress,
   onViewAllPress,
   onAddTransactionPress
 }: TransactionSectionProps) => {
-  
+
   const renderSectionHeader = () => (
     <View style={styles.sectionHeader}>
       <Text style={styles.sectionTitle}>Giao dịch gần đây</Text>
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     marginBottom: ScaleUtils.floorVerticalScale(8),
   },
   sectionTitle: {
-    fontSize: ScaleUtils.scaleFontSize(16),
+    fontSize: ScaleUtils.scaleFontSize(14),
     fontWeight: 'bold',
     color: '#333',
   },

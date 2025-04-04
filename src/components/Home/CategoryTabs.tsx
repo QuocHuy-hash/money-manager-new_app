@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ScaleUtils from '@/utils/ScaleUtils';
 import { formatCurrency } from '@/utils/format';
+import commonStyles from '@/utils/commonStyles';
 
 interface Category {
   id: number;
@@ -29,17 +30,20 @@ const CategoryTabs = ({ categories, selectedType, onSelectType }: CategoryTabsPr
           ]}
           onPress={() => onSelectType(category.name)}
         >
-          <MaterialIcons
-            name={category.name === 'salary' ? 'attach-money' : 'shopping-cart'}
-            size={18}
-            color={selectedType === category.name ? '#fff' : '#555'}
-          />
-          <Text style={[
-            styles.categoryTabText,
-            selectedType === category.name && styles.selectedCategoryTabText
-          ]}>
-            {category.title}
-          </Text>
+          <View style={commonStyles.row}>
+            <MaterialIcons
+              name={category.name === 'salary' ? 'attach-money' : 'shopping-cart'}
+              size={18}
+              color={selectedType === category.name ? '#fff' : '#555'}
+            />
+            <Text style={[
+              styles.categoryTabText,
+              selectedType === category.name && styles.selectedCategoryTabText
+            ]}>
+              {category.title}
+            </Text>
+          </View>
+
           <Text style={[
             styles.categoryTabAmount,
             selectedType === category.name && styles.selectedCategoryTabText
@@ -57,7 +61,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: ScaleUtils.floorScale(16),
-    marginBottom: ScaleUtils.floorVerticalScale(16),
+    marginBottom: ScaleUtils.floorVerticalScale(8),
   },
   categoryTab: {
     flex: 1,
@@ -80,7 +84,7 @@ const styles = StyleSheet.create({
     fontSize: ScaleUtils.scaleFontSize(12),
     fontWeight: 'bold',
     color: '#555',
-    marginTop: ScaleUtils.floorVerticalScale(4),
+    marginRight: ScaleUtils.floorVerticalScale(4),
   },
   categoryTabAmount: {
     fontSize: ScaleUtils.scaleFontSize(12),
