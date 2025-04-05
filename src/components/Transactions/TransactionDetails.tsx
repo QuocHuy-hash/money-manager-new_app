@@ -75,7 +75,7 @@ const TransactionDetails = (data: any) => {
                 <TouchableOpacity
                     style={[commonStyles.jusCenter, styles.btnAdd, commonStyles.row]}
                     onPress={() => setModalVisible(true)}
-                >
+                >handleAddTransaction
                     <Text style={{ color: '#497ff2', fontSize: ScaleUtils.scaleFontSize(12), fontWeight: 'bold' }}>
                         Thêm mới
                     </Text>

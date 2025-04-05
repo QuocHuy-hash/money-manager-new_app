@@ -18,7 +18,6 @@ interface FormData {
     userName: string;
     firstName: string;
     lastName: string;
-    phoneNumber: string;
 }
 
 interface FormErrors {
@@ -73,11 +72,11 @@ const validateRegistration = (data: FormData): FormErrors => {
     if (!data.lastName) {
         errors.lastName = 'Chưa nhập tên';
     }
-    if (!data.phoneNumber) {
-        errors.phoneNumber = 'Chưa nhập số điện thoại';
-    } else if (!/^\d{10}$/.test(data.phoneNumber)) {
-        errors.phoneNumber = 'Nhập sai định dạng số điện thoại';
-    }
+    // if (!data.phoneNumber) {
+    //     errors.phoneNumber = 'Chưa nhập số điện thoại';
+    // } else if (!/^\d{10}$/.test(data.phoneNumber)) {
+    //     errors.phoneNumber = 'Nhập sai định dạng số điện thoại';
+    // }
     return errors;
 };
 
@@ -88,11 +87,10 @@ const RegisterScreen: React.FC = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const initialState: FormData = {
         email: '',
-        password: '123456',
-        userName: 'huy123456',
-        firstName: 'Hoang',
-        lastName: 'Huy Nguyen',
-        phoneNumber: '0326465023',
+        password: '',
+        userName: '',
+        firstName: '',
+        lastName: '',
     };
 
     const { values, errors, handleChange, handleSubmit } = useForm(initialState, validateRegistration);
@@ -105,10 +103,7 @@ const RegisterScreen: React.FC = () => {
                 console.log("res: ", res);
 
                 if (res?.meta?.requestStatus === "fulfilled") {
-                    // router.push({
-                    //     pathname: '/register/verifyOTP',
-                    //     params: { email: values.email },
-                    // });
+                    navigation.navigate("verifyOTP",{ email: values.email });
                 } else {
                     Alert.alert('Lỗi!', 'Email đã được đăng ký!');
                 }
@@ -149,7 +144,7 @@ const RegisterScreen: React.FC = () => {
                 {renderInput('email', 'Email')}
                 {renderInput('userName', 'Tên đăng nhập')}
                 {renderInput('password', 'Mật khẩu')}
-                {renderInput('phoneNumber', 'Số điện thoại')}
+                {/* {renderInput('phoneNumber', 'Số điện thoại')} */}
 
                 <TouchableOpacity style={styles.signInButton} onPress={handleRegister}>
                     <Text style={styles.signInButtonText}>ĐĂNG KÝ</Text>

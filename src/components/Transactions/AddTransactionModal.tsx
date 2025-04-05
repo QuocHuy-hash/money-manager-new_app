@@ -13,6 +13,7 @@ import { renderTypeModal } from '../RenderTypeModal';
 import { KeyboardAvoidingView } from 'react-native';
 import { Platform } from 'react-native';
 import commonStyles from '@/utils/commonStyles';
+import { getHomeMonthReport, getHomeSummaryReport, getHomeTransactionsSummary } from '@/redux/homeSlice';
 
 interface AddTransactionModalProps {
     visible: boolean;
@@ -56,12 +57,17 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
             };
             const res = await dispatch(addTransaction(newTransaction));
             if (res?.meta.requestStatus === "fulfilled") {
-                const data = {
+                const dateRange = {
                     startDate: formatDateUK(fromDate),
                     endDate: formatDateUK(toDate),
                 };
-                await dispatch(getTransactions(data));
-                await dispatch(getTransactionsSummary(data));
+                await Promise.all([
+                dispatch(getTransactions(dateRange)),
+                dispatch(getTransactionsSummary(dateRange)),
+                dispatch(getHomeTransactionsSummary(dateRange)),
+                dispatch(getHomeMonthReport(dateRange)),
+                dispatch(getHomeSummaryReport({ ...dateRange, type: 1 })),
+            ]);
             }
             // Reset form
             setAmount('');

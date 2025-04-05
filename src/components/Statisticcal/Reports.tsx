@@ -12,7 +12,7 @@ const { width } = Dimensions.get('window');
 const Reports = () => {
   const dispatch = useAppDispatch();
   const yearlyData = useAppSelector((state: RootState) => state.report.yearlyReport);
-  const [selectedYear, setSelectedYear] = useState<number>(2024);
+  const [selectedYear, setSelectedYear] = useState<number>(2025);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {

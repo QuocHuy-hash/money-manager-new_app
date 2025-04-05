@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { StyleSheet, View, ScrollView, SafeAreaView, StatusBar, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, ScrollView, SafeAreaView, StatusBar, ActivityIndicator, Alert } from 'react-native';
 import { useAppDispatch, useAppSelector } from '@/hooks/reduxHook';
 import { RootState } from '@/hooks/store';
 
@@ -28,11 +28,13 @@ import {
 import { getTotalSavingsByMonth } from '@/redux/goalsSlice';
 import { setSelectedMonth } from '@/redux/dateRangeSlice';
 import CryptoPortfolio from '@/components/Crypto/CryptoPortfolio';
+import { useNavigation } from '@react-navigation/native';
+import AddTransactionModal from '@/components/Transactions/AddTransactionModal';
 
 const HomeScreen = () => {
   const dispatch = useAppDispatch();
   const currentMonthRef = useRef<string | null>(null);
-
+  const navigation = useNavigation();
   // Lấy dữ liệu từ Redux store - sử dụng selector từ homeSlice
   const transactionSummaryState = useAppSelector((state: RootState) => state.home.transactionSummary);
   const transactionByCategoryState = useAppSelector((state: RootState) => state.home.transactionByCategory);
@@ -53,6 +55,7 @@ const HomeScreen = () => {
   const [balance, setBalance] = useState('0');
   const [transactionStats, setTransactionStats] = useState({ income: 0, expense: 0, savings: 0, totalSavings: 0 });
   const [isLoading, setIsLoading] = useState(false);
+  const [transactionModalVisible, setTransactionModalVisible] = useState(false);
 
   const fetchData = useCallback(async (data: any) => {
     // Tạo một chuỗi định danh cho tháng hiện tại để tránh fetch trùng lặp
@@ -163,12 +166,13 @@ const HomeScreen = () => {
 
   const handleAddTransaction = () => {
     // Handle adding new transaction
-    console.log('Add new transaction');
+    //  setTransactionModalVisible(true);
+  Alert.alert('Thông báo', 'Chức năng này chưa được triển khai.');
   };
 
   const handleViewAllTransactions = () => {
     // Handle viewing all transactions
-    console.log('View all transactions');
+    navigation.navigate('TransactionList' as never);
   };
 
   // Xác định khi nào hiển thị loading dựa trên trạng thái của homeSlice
@@ -220,6 +224,11 @@ const HomeScreen = () => {
         visible={visibleDetailSummary}
         transactionByCategoryState={transactionByCategoryState}
         setVisibleDetailSummary={setVisibleDetailSummary}
+      />
+  <AddTransactionModal 
+        visible={transactionModalVisible}
+        onClose={() => setTransactionModalVisible(false)}
+         onSubmit={handleAddTransaction}
       />
     </SafeAreaView>
   );
