@@ -15,17 +15,17 @@ interface SummaryItemDetailsProps {
     }>;
 }
 
-const SummaryItemDetails: React.FC<SummaryItemDetailsProps> = ({ visible, transactionByCategoryState, setVisibleDetailSummary }) => {
-    const renderItem = (item: any) => (
-        <View style={styles.itemContainer}>
-            <Text style={styles.title}>{item.item.title}</Text>
-<View style={{width:"30%", height:1,backgroundColor:"#eee"}} />
-            <Text style={styles.detailText}>Số tiền: {parseFloat(item.item.amount).toLocaleString()} đ</Text>
-            <Text style={styles.detailText}>Loại giao dịch: {item.item.transaction_type}</Text>
-            <Text style={styles.detailText}>Mô tả: {item.item.description}</Text>
-            <Text style={styles.detailText}>Ngày giao dịch: {new Date(item.item.transaction_date).toLocaleDateString()}</Text>
-        </View>
-    );
+    const SummaryItemDetails: React.FC<SummaryItemDetailsProps> = ({ visible, transactionByCategoryState, setVisibleDetailSummary }) => {
+        const renderItem = (item: any) => (
+            <View style={styles.itemContainer}>
+                <Text style={styles.title}>{item.item.title}</Text>
+                <View style={{width:"30%", height:1,backgroundColor:"#eee"}} />
+                <Text style={styles.detailText}>Số tiền: {parseFloat(item.item.amount).toLocaleString()} đ</Text>
+                <Text style={styles.detailText}>Loại giao dịch: {item.item.transaction_type}</Text>
+                <Text style={styles.detailText}>Mô tả: {item.item.description}</Text>
+                <Text style={styles.detailText}>Ngày giao dịch: {new Date(item.item.transaction_date).toLocaleDateString()}</Text>
+            </View>
+        );
     return (
         <Modal visible={visible} transparent animationType="slide" onRequestClose={() => { }}>
             <View style={styles.modalOverlay}>

@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
         color: '#333333',
     },
     noDataContainer: {
-        height: 200,
+        height: ScaleUtils.floorVerticalScale(200),
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#F5F5F5',

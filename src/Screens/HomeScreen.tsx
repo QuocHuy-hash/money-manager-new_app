@@ -139,7 +139,7 @@ const HomeScreen = () => {
     if (res?.meta.requestStatus === "fulfilled") {
       setVisibleDetailSummary(true);
     }
-  }, [dispatch]);
+  }, [dispatch,fromDate, toDate]);
 
   const handleSelectType = useCallback((name: string) => {
     setType(name);
